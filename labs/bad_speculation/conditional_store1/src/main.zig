@@ -60,7 +60,7 @@ pub fn main() !void {
         if (difference > 0) {
             std.debug.print("new version is slower by: {d:.1}%\n", .{percent});
         } else {
-            std.debug.print("new version is faster by: {d:.1}% (goal is ~20% speedup)\n", .{percent});
+            std.debug.print("new version is faster by: {d:.1}% (goal is >50% speedup)\n", .{percent});
         }
     } else {
         std.debug.print("new version is equivalent\n", .{});
