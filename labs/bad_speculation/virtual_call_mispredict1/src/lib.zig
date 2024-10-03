@@ -1,11 +1,18 @@
 const std = @import("std");
 
 pub const Dynamic = struct {
-    func: *const fn (x: *usize) void,
+    func: *const fn (data: *usize) void,
 
-    pub fn init(f: *const fn (x: *usize) void) @This() {
+    pub fn init(which: u8) @This() {
         return .{
-            .func = f,
+            .func = switch (which) {
+                inline 0...3 => |v| struct {
+                    fn impl(data: *usize) void {
+                        data.* += v + 1;
+                    }
+                }.impl,
+                else => unreachable,
+            },
         };
     }
 
@@ -13,15 +20,3 @@ pub const Dynamic = struct {
         self.func(x);
     }
 };
-
-pub fn one(x: *usize) void {
-    x.* += 1;
-}
-
-pub fn two(x: *usize) void {
-    x.* += 2;
-}
-
-pub fn three(x: *usize) void {
-    x.* += 3;
-}

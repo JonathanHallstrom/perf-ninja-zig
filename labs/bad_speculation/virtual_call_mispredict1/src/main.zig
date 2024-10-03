@@ -25,20 +25,15 @@ test {
 }
 
 pub fn main() !void {
-    var seed: u64 = @intCast(std.time.microTimestamp());
+    const seed: u64 = @intCast(std.time.microTimestamp());
 
-    var seedarr: [32]u8 = undefined;
-    for (&seedarr) |*e| {
-        e.* = @intCast(seed % 256);
-        seed *%= 7;
-    }
-    var rng = std.Random.DefaultCsprng.init(seedarr);
+    var rng = std.Random.DefaultPrng.init(seed);
 
     const n = 64 << 10;
     var old_dynamic_dispatchers: [n]lib.Dynamic = undefined;
-    original.generate(&old_dynamic_dispatchers, &rng);
+    original.generate(&old_dynamic_dispatchers, rng.random());
     var new_dynamic_dispatchers: [n]lib.Dynamic = undefined;
-    solution.generate(&new_dynamic_dispatchers, &rng);
+    solution.generate(&new_dynamic_dispatchers, rng.random());
 
     var data: usize = 0;
     var timer = try std.time.Timer.start();

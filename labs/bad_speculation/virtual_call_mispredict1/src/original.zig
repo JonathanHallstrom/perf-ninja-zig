@@ -3,13 +3,9 @@ const std = @import("std");
 const lib = @import("lib.zig");
 const Dynamic = lib.Dynamic;
 
-pub fn generate(arr: []Dynamic, rng: anytype) void {
+pub fn generate(arr: []Dynamic, rng: std.Random) void {
     for (arr) |*e| {
-        e.* = Dynamic.init(switch (rng.random().uintLessThan(u8, 3)) {
-            0 => &lib.one,
-            1 => &lib.two,
-            else => &lib.three,
-        });
+        e.* = Dynamic.init(rng.uintLessThan(u8, 3));
     }
 }
 
