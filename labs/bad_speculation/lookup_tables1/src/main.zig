@@ -37,6 +37,9 @@ pub fn main() !void {
 
     const percent = @as(f64, @floatFromInt(@abs(difference))) * 100 / @as(f64, @floatFromInt(old_time));
 
+    std.debug.print("old: {}\n", .{std.fmt.fmtDuration(old_time)});
+    std.debug.print("new: {}\n", .{std.fmt.fmtDuration(new_time)});
+
     if (percent > 5) {
         if (difference > 0) {
             std.debug.print("new version is slower by: {d:.1}%\n", .{percent});
