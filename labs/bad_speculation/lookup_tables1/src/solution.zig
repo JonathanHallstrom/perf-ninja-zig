@@ -14,10 +14,20 @@ fn mapToBucket(v: i32) usize {
     };
 }
 
+fn mapToBucketFaster(v: i32) usize {
+    const precomp = comptime blk: {
+        var res: [100]usize = .{0} ** 100;
+        for (0..100) |i| res[i] = mapToBucket(i);
+        break :blk res;
+    };
+    if (!(0 <= v and v < 100)) return mapToBucket(v);
+    return precomp[@intCast(v)];
+}
+
 pub fn histogram(values: []i32) [8]usize {
     var buckets: [8]usize = .{0} ** 8;
     for (values) |e| {
-        buckets[mapToBucket(e)] += 1;
+        buckets[mapToBucketFaster(e)] += 1;
     }
     return buckets;
 }
