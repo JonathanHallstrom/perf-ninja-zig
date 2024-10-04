@@ -3,7 +3,9 @@ const std = @import("std");
 pub fn longestLine(input: []const u8) usize {
     var longest: usize = 0;
 
-    // simple idiomatic solution, gives ~60% speedup
+    // simple idiomatic solution, 
+    // around 78% faster on MarkTwain-TomSawyer.txt
+    // around 87% faster on udivmodti4_test.zig
     // var it = std.mem.splitScalar(u8, input, '\n');
     // while (it.next()) |line| longest = @max(longest, line.len);
 
@@ -11,7 +13,8 @@ pub fn longestLine(input: []const u8) usize {
     var current: usize = 0;
     var i: usize = 0;
     if (std.simd.suggestVectorLength(u8)) |unroll| {
-        // around ~77% faster on my machine
+        // around 87% faster on MarkTwain-TomSawyer.txt
+        // around 92% faster on udivmodti4_test.zig
         const CVec = @Vector(unroll, u8);
         const Mask = std.meta.Int(.unsigned, unroll);
         while (i + unroll - 1 < input.len) {
@@ -32,7 +35,8 @@ pub fn longestLine(input: []const u8) usize {
         }
         longest = @max(longest, current);
     } else {
-        // around 73% faster on my machine
+        // around 81% faster on MarkTwain-TomSawyer.txt
+        // around 82% faster on udivmodti4_test.zig
         // SWAR solution if SIMD isn't available
         // techniques inspired by https://lemire.me/blog/2017/01/20/how-quickly-can-you-remove-spaces-from-a-string/
         const unroll = @sizeOf(usize);
