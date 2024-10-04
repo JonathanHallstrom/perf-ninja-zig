@@ -30,8 +30,8 @@ pub fn main() !void {
     }
 
     var timer = try std.time.Timer.start();
-    const char_amt = 1 << 20;
-    for (0..1 << 10) |_| {
+    const char_amt = 16 << 20;
+    for (0..1 << 5) |_| {
         for (inputs) |input| {
             // do approximately the same amount of work for each input
             for (0..(char_amt + input.len - 1) / input.len) |_|
@@ -39,7 +39,7 @@ pub fn main() !void {
         }
     }
     const old_time = timer.lap();
-    for (0..1 << 10) |_| {
+    for (0..1 << 5) |_| {
         for (inputs) |input| {
             // do approximately the same amount of work for each input
             for (0..(char_amt + input.len - 1) / input.len) |_|
