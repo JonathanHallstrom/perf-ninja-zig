@@ -22,7 +22,7 @@ test {
 pub fn main() !void {
     comptime var inputs: []const []const u8 = &.{};
     inline for (.{
-        "LoopVectorize.cpp",
+        "udivmodti4_test.zig",
         "MarkTwain-TomSawyer.txt",
         // "counter-example.txt",
     }) |filename| {
