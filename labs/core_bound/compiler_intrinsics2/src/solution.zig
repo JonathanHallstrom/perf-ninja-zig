@@ -35,26 +35,27 @@ pub fn longestLine(input: []const u8) usize {
         // around 73% faster on my machine
         // SWAR solution if SIMD isn't available
         // techniques inspired by https://lemire.me/blog/2017/01/20/how-quickly-can-you-remove-spaces-from-a-string/
-        while (i + 7 < input.len) {
+        const unroll = @sizeOf(usize);
+        while (i + unroll - 1 < input.len) {
             // do little endian read even on big endian systems for simpler code
             // could theoretically handle both separately but a byte swap is really cheap anyway
-            const buf: u64 = std.mem.readInt(u64, input[i..][0..8], .little);
+            const buf = std.mem.readInt(usize, input[i..][0..unroll], .little);
             
-            const new_lines = std.math.maxInt(u64) / 255 * '\n';
+            const new_lines = std.math.maxInt(usize) / 255 * '\n';
 
-            const high_bits_mask = 0x0101010101010101;
-            const zero_byte_mask = 0x8080808080808080;
+            const lowest_bits = std.math.maxInt(usize) / 255 * 0x01;
+            const highest_bits = std.math.maxInt(usize) / 255 * 0x80;
 
             const check = buf ^ new_lines;
-            const is_newline = check -% high_bits_mask & ~check & zero_byte_mask;
+            const is_newline = check -% lowest_bits & ~check & highest_bits;
             if (is_newline != 0) {
                 const leading_zeros = @ctz(is_newline) / 8;
                 longest = @max(longest, current + leading_zeros);
                 current = 0;
                 i += leading_zeros + 1;
             } else {
-                current += 8;
-                i += 8;
+                current += unroll;
+                i += unroll;
             }
         }
         longest = @max(longest, current);
