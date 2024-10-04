@@ -36,8 +36,10 @@ pub fn longestLine(input: []const u8) usize {
         // SWAR solution if SIMD isn't available
         // techniques inspired by https://lemire.me/blog/2017/01/20/how-quickly-can-you-remove-spaces-from-a-string/
         while (i + 7 < input.len) {
-            const buf: u64 = @bitCast(input[i..][0..8].*);
-
+            // do little endian read even on big endian systems for simpler code
+            // could theoretically handle both separately but a byte swap is really cheap anyway
+            const buf: u64 = std.mem.readInt(u64, input[i..][0..8], .little);
+            
             const new_lines = std.math.maxInt(u64) / 255 * '\n';
 
             const high_bits_mask = 0x0101010101010101;
