@@ -23,7 +23,17 @@ test {
 }
 
 pub fn main() !void {
-    const allocator = std.heap.raw_c_allocator;
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    defer _ = gpa.deinit();
+    const allocator = gpa.allocator();
+
+    var args = try std.process.argsWithAllocator(allocator);
+    var skip_original = false;
+    var skip_solution = false;
+    while (args.next()) |arg| {
+        if (std.mem.eql(u8, arg, "--skip-original")) skip_original = true;
+        if (std.mem.eql(u8, arg, "--skip-solution")) skip_solution = true;
+    }
 
     var original: [16]OriginalLife = undefined;
     for (&original) |*e| e.* = try OriginalLife.initRandom(allocator);
@@ -34,17 +44,22 @@ pub fn main() !void {
     defer for (&new) |*e| e.deinit();
 
     var timer = try std.time.Timer.start();
-    for (0..16) |_| {
-        for (&original) |*e| {
-            e.simulateNext();
-            std.mem.doNotOptimizeAway(e.getPopulationCount());
+
+    if (!skip_original) {
+        for (0..16) |_| {
+            for (&original) |*e| {
+                e.simulateNext();
+                std.mem.doNotOptimizeAway(e.getPopulationCount());
+            }
         }
     }
     const old_time = timer.lap();
-    for (0..16) |_| {
-        for (&new) |*e| {
-            e.simulateNext();
-            std.mem.doNotOptimizeAway(e.getPopulationCount());
+    if (!skip_solution) {
+        for (0..16) |_| {
+            for (&new) |*e| {
+                e.simulateNext();
+                std.mem.doNotOptimizeAway(e.getPopulationCount());
+            }
         }
     }
     const new_time = timer.lap();
@@ -52,16 +67,19 @@ pub fn main() !void {
 
     const percent = @as(f64, @floatFromInt(@abs(difference))) * 100 / @as(f64, @floatFromInt(old_time));
 
-    std.debug.print("old: {}\n", .{std.fmt.fmtDuration(old_time)});
-    std.debug.print("new: {}\n", .{std.fmt.fmtDuration(new_time)});
+    if (!skip_original) std.debug.print("old: {}\n", .{std.fmt.fmtDuration(old_time)});
 
-    if (percent > 5) {
-        if (difference > 0) {
-            std.debug.print("new version is slower by: {d:.1}%\n", .{percent});
+    if (!skip_solution) std.debug.print("new: {}\n", .{std.fmt.fmtDuration(new_time)});
+
+    if (!skip_original and !skip_solution) {
+        if (percent > 5) {
+            if (difference > 0) {
+                std.debug.print("new version is slower by: {d:.1}%\n", .{percent});
+            } else {
+                std.debug.print("new version is faster by: {d:.1}% (goal is >50% speedup)\n", .{percent});
+            }
         } else {
-            std.debug.print("new version is faster by: {d:.1}% (goal is >20% speedup)\n", .{percent});
+            std.debug.print("new version is equivalent\n", .{});
         }
-    } else {
-        std.debug.print("new version is equivalent\n", .{});
     }
 }
