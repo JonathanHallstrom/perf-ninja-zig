@@ -21,13 +21,14 @@ pub fn main() !void {
     const allocator = gpa.allocator();
 
     var args = try std.process.argsWithAllocator(allocator);
+    defer args.deinit();
     var skip_original = false;
     var skip_solution = false;
     while (args.next()) |arg| {
         if (std.mem.eql(u8, arg, "--skip-original")) skip_original = true;
         if (std.mem.eql(u8, arg, "--skip-solution")) skip_solution = true;
     }
-    
+
     const seed: u64 = @intCast(std.time.microTimestamp());
 
     var rng = std.Random.DefaultPrng.init(seed);

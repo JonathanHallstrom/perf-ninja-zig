@@ -28,6 +28,7 @@ pub fn main() !void {
     const allocator = gpa.allocator();
 
     var args = try std.process.argsWithAllocator(allocator);
+    defer args.deinit();
     var skip_original = false;
     var skip_solution = false;
     while (args.next()) |arg| {
