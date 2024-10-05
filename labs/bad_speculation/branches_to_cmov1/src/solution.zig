@@ -99,12 +99,10 @@ pub fn Life(x_dim: comptime_int, y_dim: comptime_int) type {
 
                     alive_neighbors -= self.current[i][j];
 
-                    self.future[i][j] = switch (alive_neighbors) {
-                        0, 1 => 0,
-                        2 => self.current[i][j],
-                        3 => 1,
-                        else => 0,
-                    };
+                    var res = self.current[i][j];
+                    res &= @intFromBool(2 <= alive_neighbors and alive_neighbors <= 3);
+                    res |= @intFromBool(alive_neighbors == 3);
+                    self.future[i][j] = res;
                 }
             }
             std.mem.swap(Grid, &self.current, &self.future);
