@@ -11,8 +11,8 @@ pub fn multiply(out: *Matrix, a: *const Matrix, b: *const Matrix) void {
     for (out) |*row| @memset(row, 0);
 
     for (0..N) |i| {
-        for (0..N) |j| {
-            for (0..N) |k| {
+        for (0..N) |k| {
+            for (0..N) |j| {
                 out[i][j] += a[i][k] * b[k][j];
             }
         }
