@@ -88,18 +88,18 @@ pub fn Life(x_dim: comptime_int, y_dim: comptime_int) type {
         pub fn simulateNext(self: *Self) void {
             for (0..x_dim) |i| {
                 for (0..y_dim) |j| {
-                    var aliveNeightbours: i32 = 0;
+                    var alive_neighbors: i32 = 0;
                     for (0..3) |p| {
                         for (0..3) |q| {
                             if (i + p < 1 or i + p > x_dim - 1 or
                                 j + q < 1 or j + q > y_dim - 1) continue;
-                            aliveNeightbours += self.current[i + p - 1][j + q - 1];
+                            alive_neighbors += self.current[i + p - 1][j + q - 1];
                         }
                     }
 
-                    aliveNeightbours -= self.current[i][j];
+                    alive_neighbors -= self.current[i][j];
 
-                    self.future[i][j] = switch (aliveNeightbours) {
+                    self.future[i][j] = switch (alive_neighbors) {
                         0, 1 => 0,
                         2 => self.current[i][j],
                         3 => 1,
