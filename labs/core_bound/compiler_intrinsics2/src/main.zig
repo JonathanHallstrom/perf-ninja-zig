@@ -20,6 +20,19 @@ test {
 }
 
 pub fn main() !void {
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    defer _ = gpa.deinit();
+    const allocator = gpa.allocator();
+
+    var args = try std.process.argsWithAllocator(allocator);
+    defer args.deinit();
+    var skip_original = false;
+    var skip_solution = false;
+    while (args.next()) |arg| {
+        if (std.mem.eql(u8, arg, "--skip-original")) skip_original = true;
+        if (std.mem.eql(u8, arg, "--skip-solution")) skip_solution = true;
+    }
+
     comptime var inputs: []const []const u8 = &.{};
     inline for (.{
         "udivmodti4_test.zig",
@@ -31,19 +44,23 @@ pub fn main() !void {
 
     var timer = try std.time.Timer.start();
     const char_amt = 16 << 20;
-    for (0..1 << 5) |_| {
-        for (inputs) |input| {
-            // do approximately the same amount of work for each input
-            for (0..(char_amt + input.len - 1) / input.len) |_|
-                std.mem.doNotOptimizeAway(original.longestLine(input));
+    if (!skip_original) {
+        for (0..1 << 5) |_| {
+            for (inputs) |input| {
+                // do approximately the same amount of work for each input
+                for (0..(char_amt + input.len - 1) / input.len) |_|
+                    std.mem.doNotOptimizeAway(original.longestLine(input));
+            }
         }
     }
     const old_time = timer.lap();
-    for (0..1 << 5) |_| {
-        for (inputs) |input| {
-            // do approximately the same amount of work for each input
-            for (0..(char_amt + input.len - 1) / input.len) |_|
-                std.mem.doNotOptimizeAway(solution.longestLine(input));
+    if (!skip_solution) {
+        for (0..1 << 5) |_| {
+            for (inputs) |input| {
+                // do approximately the same amount of work for each input
+                for (0..(char_amt + input.len - 1) / input.len) |_|
+                    std.mem.doNotOptimizeAway(solution.longestLine(input));
+            }
         }
     }
     const new_time = timer.lap();
@@ -51,16 +68,19 @@ pub fn main() !void {
 
     const percent = @as(f64, @floatFromInt(@abs(difference))) * 100 / @as(f64, @floatFromInt(old_time));
 
-    std.debug.print("old: {}\n", .{std.fmt.fmtDuration(old_time)});
-    std.debug.print("new: {}\n", .{std.fmt.fmtDuration(new_time)});
+    if (!skip_original) std.debug.print("old: {}\n", .{std.fmt.fmtDuration(old_time)});
 
-    if (percent > 5) {
-        if (difference > 0) {
-            std.debug.print("new version is slower by: {d:.1}%\n", .{percent});
+    if (!skip_solution) std.debug.print("new: {}\n", .{std.fmt.fmtDuration(new_time)});
+
+    if (!skip_original and !skip_solution) {
+        if (percent > 5) {
+            if (difference > 0) {
+                std.debug.print("new version is slower by: {d:.1}%\n", .{percent});
+            } else {
+                std.debug.print("new version is faster by: {d:.1}% (goal is >50% speedup)\n", .{percent});
+            }
         } else {
-            std.debug.print("new version is faster by: {d:.1}% (goal is >50% speedup)\n", .{percent});
+            std.debug.print("new version is equivalent\n", .{});
         }
-    } else {
-        std.debug.print("new version is equivalent\n", .{});
     }
 }
