@@ -13,8 +13,8 @@ fn generateFile(name: []const u8, size: usize, rng: anytype) !void {
     var bw = std.io.bufferedWriter(f.writer());
     for (0..size) |_| try bw.writer().writeByte(switch (rng.random().uintLessThanBiased(u8, 26 + 26 + 10)) {
         0...25 => |o| o + 'a',
-        26...51 => |o| o + 'A',
-        else => |o| o + '0',
+        26...51 => |o| o - 26 + 'A',
+        else => |o| o - 52 + '0',
     });
     try bw.flush();
 }
