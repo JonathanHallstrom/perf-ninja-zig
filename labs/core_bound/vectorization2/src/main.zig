@@ -8,11 +8,12 @@ test {
 
     var rng = std.Random.DefaultPrng.init(seed);
 
-    const n = 64 << 10;
-    var input: [n]u8 = undefined;
-    for (&input) |*e| e.* = rng.random().uintAtMost(u8, 255);
+    const n = 64 << 20;
+    const input: []u8 = try std.testing.allocator.alloc(u8, n);
+    defer std.testing.allocator.free(input);
+    for (input) |*e| e.* = rng.random().uintAtMost(u8, 255);
 
-    try std.testing.expectEqual(original.checksum(&input), solution.checksum(&input));
+    try std.testing.expectEqual(original.checksum(input), solution.checksum(input));
 }
 
 pub fn main() !void {
@@ -33,20 +34,21 @@ pub fn main() !void {
 
     var rng = std.Random.DefaultPrng.init(seed);
 
-    const n = 64 << 10;
-    var input: [n]u8 = undefined;
-    for (&input) |*e| e.* = rng.random().uintAtMost(u8, 255);
+    const n = 64 << 20;
+    const input = try allocator.alloc(u8, n);
+    defer allocator.free(input);
+    for (input) |*e| e.* = rng.random().uintAtMost(u8, 255);
 
     var timer = try std.time.Timer.start();
     if (!skip_original) {
-        for (0..16 << 10) |_| {
-            std.mem.doNotOptimizeAway(original.checksum(&input));
+        for (0..16) |_| {
+            std.mem.doNotOptimizeAway(original.checksum(input));
         }
     }
     const old_time = timer.lap();
     if (!skip_solution) {
-        for (0..16 << 10) |_| {
-            std.mem.doNotOptimizeAway(solution.checksum(&input));
+        for (0..16) |_| {
+            std.mem.doNotOptimizeAway(solution.checksum(input));
         }
     }
     const new_time = timer.lap();
@@ -63,7 +65,7 @@ pub fn main() !void {
             if (difference > 0) {
                 std.debug.print("new version is slower by: {d:.1}%\n", .{percent});
             } else {
-                std.debug.print("new version is faster by: {d:.1}% (goal is >50% speedup)\n", .{percent});
+                std.debug.print("new version is faster by: {d:.1}% (goal is >80% speedup)\n", .{percent});
             }
         } else {
             std.debug.print("new version is equivalent\n", .{});
