@@ -4,8 +4,16 @@ const original = @import("original.zig");
 const solution = @import("solution.zig");
 
 fn generateFile(name: []const u8, size: usize, rng: anytype) !void {
-    if (std.fs.cwd().openFile(name, .{})) |_| {
-        return;
+    if (std.fs.cwd().openFile(name, .{})) |f| {
+        if (f.stat()) |stats| {
+            const actual_size: isize = @intCast(stats.size);
+            const desired_size: isize = @intCast(size);
+            // if size is off by less than 1% thats fine
+            if (100 * @abs(actual_size - desired_size) / size < 1) {
+                std.debug.print("{s} already exists, skipping\n", .{name});
+                return;
+            }
+        } else |_| {}
     } else |_| {}
 
     const f = try std.fs.cwd().createFile(name, .{});
@@ -21,11 +29,13 @@ fn generateFile(name: []const u8, size: usize, rng: anytype) !void {
 
 fn generateFiles() !void {
     const seed: u64 = @intCast(std.time.microTimestamp());
+    var timer = try std.time.Timer.start();
 
     var rng = std.Random.DefaultPrng.init(seed);
     try generateFile("small.data", (1 << 12) - 1, &rng);
     try generateFile("medium.data", (1 << 21) - 1, &rng);
     try generateFile("large.data", (1 << 28) - 1, &rng);
+    std.debug.print("data file generation took: {}\n\n", .{std.fmt.fmtDuration(timer.read())});
 }
 
 test {
