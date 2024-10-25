@@ -1,3 +1,5 @@
+# WARNING: SPOILERS AHEAD
+
 # perf-ninja-zig
 Zig port of [dendibakh/perf-ninja](https://github.com/dendibakh/perf-ninja/)
 
