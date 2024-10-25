@@ -1,5 +1,8 @@
 const std = @import("std");
 
+// note: original implementation is from the standard library
+// https://github.com/ziglang/zig/blob/985b13934da0eea9e01db6232c958485e30b97ef/lib/std/sort.zig#L675
+
 const original = @import("original.zig");
 const solution = @import("solution.zig");
 
