@@ -1,3 +1,6 @@
+# WARNING: SPOILERS AHEAD
+# rebasing got annoying, squashed the history, see `solutions` branch
+
 # perf-ninja-zig
 Zig port of [dendibakh/perf-ninja](https://github.com/dendibakh/perf-ninja/)
 

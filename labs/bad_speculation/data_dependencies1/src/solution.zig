@@ -1,17 +1,18 @@
 const std = @import("std");
 
+
 // `key` is guaranteed to be one of the elements of `items`
 pub fn binarySearch(items: []u32, key: u32) usize {
-    var low: usize = 0;
-    var high: usize = items.len;
+    var it: usize = 0;
+    var len: usize = items.len;
 
-    while (low < high) {
-        const mid = low + (high - low) / 2;
-        if (items[mid] < key) {
-            low = mid + 1;
-        } else {
-            high = mid;
+    while (len > 1) {
+        const half: usize = len / 2;
+        len -= half;
+        if (items[it + half - 1] < key) {
+            it += half;
         }
     }
-    return low;
+
+    return it;
 }
