@@ -48,7 +48,7 @@ test {
     const n = 1 << 10;
     const input_a = try makeList(n, allocator, rng.random());
     const input_b = try makeList(n, allocator, rng.random());
-    try std.testing.expectEqual(std.mem.doNotOptimizeAway(original.solution(input_a, input_b)), std.mem.doNotOptimizeAway(solution.solution(input_a, input_b)));
+    try std.testing.expectEqual(original.solution(input_a, input_b), solution.solution(input_a, input_b));
 }
 
 pub fn main() !void {
