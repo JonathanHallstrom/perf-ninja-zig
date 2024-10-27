@@ -16,7 +16,7 @@ pub fn imageSmoothing(input: []u8, radius: u8, output: []u16) void {
         output[pos] = currentSum;
     }
 
-    const unroll = (std.simd.suggestVectorLength(u16) orelse 8) * 2;
+    const unroll = std.simd.suggestVectorLength(u16) orelse 8;
 
     while (pos + unroll - 1 < size - radius) : (pos += unroll) {
         const sub: @Vector(unroll, i16) = input[pos - radius - 1..][0..unroll].*;
