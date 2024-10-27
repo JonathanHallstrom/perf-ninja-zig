@@ -3,7 +3,7 @@ const std = @import("std");
 const Allocator = std.mem.Allocator;
 
 const Accumulator = struct {
-    value: std.atomic.Value(u32) align(64) = std.atomic.Value(u32).init(0),
+    value: std.atomic.Value(u32) align(std.atomic.cache_line) = std.atomic.Value(u32).init(0),
 };
 
 fn work(data: []u32, target: *Accumulator) void {
