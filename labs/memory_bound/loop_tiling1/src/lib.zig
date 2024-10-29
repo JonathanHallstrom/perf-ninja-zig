@@ -2,14 +2,6 @@ const std = @import("std");
 
 pub const N = 1 << 12;
 pub const Matrix = [N][N]f32;
-pub const identityMatrix = blk: {
-    var res: Matrix = undefined;
-    @memset(std.mem.asBytes(res), 0);
-    for (0..N) |i| {
-        res[i][i] = 1;
-    }
-    break :blk res;
-};
 
 pub fn initRandomMatrix(allocator: std.mem.Allocator, rng: std.Random) !*Matrix {
     var res: *Matrix = try allocator.create(Matrix);
