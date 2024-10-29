@@ -50,6 +50,7 @@ pub fn main() !void {
     const keys = try allocator.dupe(u32, input);
     rng.random().shuffle(u32, keys);
 
+    for (input) |*e| @prefetch(e, .{});
     var timer = try std.time.Timer.start();
     if (!skip_original) {
         for (0..1 << 12) |_| {
