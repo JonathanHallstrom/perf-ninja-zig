@@ -46,12 +46,12 @@ test {
     const old_res = blk: {
         var file_handle = try std.fs.cwd().openFile(file_name, .{});
         defer file_handle.close();
-        break :blk original.getCrc32(file_handle.reader());
+        break :blk original.getCrc32(file_handle.reader().any());
     };
     const new_res = blk: {
         var file_handle = try std.fs.cwd().openFile(file_name, .{});
         defer file_handle.close();
-        break :blk solution.getCrc32(file_handle.reader());
+        break :blk solution.getCrc32(file_handle.reader().any());
     };
 
     try std.testing.expectEqual(old_res, new_res);
@@ -78,13 +78,13 @@ pub fn main() !void {
     if (!skip_original) {
         var file_handle = try std.fs.cwd().openFile(file_name, .{});
         defer file_handle.close();
-        std.mem.doNotOptimizeAway(original.getCrc32(file_handle.reader()));
+        std.mem.doNotOptimizeAway(original.getCrc32(file_handle.reader().any()));
     }
     const old_time = timer.lap();
     if (!skip_solution) {
         var file_handle = try std.fs.cwd().openFile(file_name, .{});
         defer file_handle.close();
-        std.mem.doNotOptimizeAway(solution.getCrc32(file_handle.reader()));
+        std.mem.doNotOptimizeAway(solution.getCrc32(file_handle.reader().any()));
     }
     const new_time = timer.lap();
     const difference: i64 = @as(i64, @intCast(new_time)) - @as(i64, @intCast(old_time));
