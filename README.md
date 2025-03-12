@@ -5,9 +5,11 @@ Zig port of [dendibakh/perf-ninja](https://github.com/dendibakh/perf-ninja/)
 0. Read [dendibakh/perf-ninja](https://github.com/dendibakh/perf-ninja/)
 1. Choose an exercise and go to its directory (for example `labs/misc/warmup1`)
 2. Run `zig build test` to check your solution
-3. Run `zig build run` to benchmark it
+3. Run `zig build run` to benchmark it*
 4. Optimize
 5. Goto 1
+   
+*If you are using an IDE and you press a `run` button or similar it likely won't apply the proper optimization mode
 
 ## Profiling
 
