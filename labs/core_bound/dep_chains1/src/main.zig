@@ -40,7 +40,7 @@ test {
     const seed: u64 = @intCast(std.time.microTimestamp());
 
     var rng = std.Random.DefaultPrng.init(seed);
-    
+
     var arena = std.heap.ArenaAllocator.init(std.testing.allocator);
     defer arena.deinit();
     const allocator = arena.allocator();
@@ -90,8 +90,8 @@ pub fn main() !void {
     }
     const new_time = timer.lap();
     const difference: i64 = @as(i64, @intCast(new_time)) - @as(i64, @intCast(old_time));
-
-    const percent = @as(f64, @floatFromInt(@abs(difference))) * 100 / @as(f64, @floatFromInt(old_time));
+    const fraction = @as(f64, @floatFromInt(@abs(difference))) / @as(f64, @floatFromInt(old_time));
+    const percent = (1 / (1 - fraction) - 1) * 100;
 
     if (!skip_original) std.debug.print("old: {}\n", .{std.fmt.fmtDuration(old_time)});
 
@@ -102,7 +102,7 @@ pub fn main() !void {
             if (difference > 0) {
                 std.debug.print("new version is slower by: {d:.1}%\n", .{percent});
             } else {
-                std.debug.print("new version is faster by: {d:.1}% (goal is >50% speedup)\n", .{percent});
+                std.debug.print("new version is faster by: {d:.1}% (goal is >100% speedup)\n", .{percent});
             }
         } else {
             std.debug.print("new version is equivalent\n", .{});
