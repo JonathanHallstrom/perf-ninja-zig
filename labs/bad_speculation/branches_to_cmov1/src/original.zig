@@ -91,8 +91,8 @@ pub fn Life(x_dim: comptime_int, y_dim: comptime_int) type {
                     var alive_neighbors: i32 = 0;
                     for (0..3) |p| {
                         for (0..3) |q| {
-                            if (i + p < 1 or i + p > x_dim - 1 or
-                                j + q < 1 or j + q > y_dim - 1) continue;
+                            if (i + p < 1 or i + p > x_dim or
+                                j + q < 1 or j + q > y_dim) continue;
                             alive_neighbors += self.current[i + p - 1][j + q - 1];
                         }
                     }
