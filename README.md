@@ -11,6 +11,8 @@ Zig port of [dendibakh/perf-ninja](https://github.com/dendibakh/perf-ninja/)
    
 *If you are using an IDE and you press a `run` button or similar it likely won't apply the proper optimization mode
 
+If you get stuck, feel free to checkout the `solutions` branch to see an example solution for each exercise.
+
 ## Profiling
 
 To run only your code, pass the `--skip-original` flag (e.g., `zig build run -- --skip-original`), and to run only the original pass `--skip-solution`.
